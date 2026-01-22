@@ -145,12 +145,18 @@
         display: block;
     }
 
+    /* 設定エリア専用スタイル */
     .master-data {
         margin-top: 80px;
         padding: 20px;
         background: #f9f9f9;
         font-size: 12px;
         border: 1px dashed #ccc;
+    }
+    .master-data textarea {
+        resize: vertical; /* 手動リサイズを有効化 */
+        min-height: 120px;
+        overflow-y: auto; /* 長くなったらスクロール可能に */
     }
 </style>
 </head>
@@ -254,7 +260,7 @@
             <span class="detail-title">名前</span><input type="text" class="save-target" data-label="C2名前">
             <span class="detail-title">一人称</span><textarea class="save-target auto-resize" data-label="C2一人称"></textarea>
             <span class="detail-title">二人称</span><textarea class="save-target auto-resize" data-label="C2二人称"></textarea>
-            <span class="detail-title">相手からの呼ばれ方</span><textarea class="save-target auto-resize" data-label="C1被呼称"></textarea>
+            <span class="detail-title">相手からの呼ばれ方</span><textarea class="save-target auto-resize" data-label="C2被呼称"></textarea>
             <span class="detail-title">見た目</span><textarea class="save-target auto-resize" data-label="C2外見"></textarea>
             <span class="detail-title">口調</span><textarea class="save-target auto-resize" data-label="C2口調"></textarea>
         </div>
@@ -268,6 +274,7 @@
 
 <div class="master-data">
     <h3>⚙️ 抽選項目の編集</h3>
+    <p>改行区切りで入力してください。右下をドラッグして広げることができます。</p>
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
         <div>属性（男性）<textarea id="master-attr-male" oninput="updateMaster()">熱血&#13;紳士的&#13;俺様&#13;不器用</textarea></div>
         <div>属性（女性）<textarea id="master-attr-female" oninput="updateMaster()">清楚&#13;ツンデレ&#13;お姉様&#13;勝気</textarea></div>
@@ -288,6 +295,9 @@ const storeKeyMaster = "cp_game_master_v4";
 let masterData = {};
 
 function adjustHeight(el) {
+    // 編集エリア（master-data内）のtextareaは自動リサイズをスキップ（手動リサイズを優先）
+    if (el.closest('.master-data')) return;
+
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
 }
