@@ -2,170 +2,224 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>ランダムカプメーカー</title>
+<title>ランダムカプゲーム</title>
 <style>
     :root {
-        --bg: #ffffff;
-        --card-bg: #fdfdfd;
-        --border: #e0e0e0;
-        --text: #1a1a1a;
+        --bg: #f8f9fa;
+        --card-bg: #ffffff;
+        --border: #dee2e6;
+        --text: #212529;
         --accent: #000000;
-        --secondary: #f4f4f4;
-        --muted: #757575;
+        --secondary: #f1f3f5;
+        --muted: #6c757d;
+        --focus: #000000;
     }
 
     body {
         font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
         background: var(--bg);
         color: var(--text);
-        padding: 40px 20px;
-        line-height: 1.6;
-        max-width: 900px;
+        padding: 60px 20px;
+        line-height: 1.8;
+        max-width: 1000px;
         margin: 0 auto;
     }
 
-    h1, h2, h3 {
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        margin-bottom: 15px;
+    h1 { 
+        text-align: center; 
+        margin-bottom: 60px; 
+        font-size: 48px; /* タイトルをより大きく */
+        font-weight: 800;
+        letter-spacing: 0.1em;
     }
 
-    h1 { text-align: center; margin-bottom: 40px; }
+    h2, h3 {
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        margin-bottom: 20px;
+    }
 
-    .btn-group { text-align: center; margin-bottom: 30px; }
+    .btn-group { text-align: center; margin-bottom: 40px; }
 
-    button {
+    /* メインボタン（保存・コピー・すべて決定） */
+    .primary-btn {
         background: var(--accent);
         color: white;
         border: 1px solid var(--accent);
-        padding: 10px 20px;
-        border-radius: 4px;
+        padding: 16px 32px;
+        border-radius: 8px;
         cursor: pointer;
-        font-size: 14px;
-        transition: all 0.2s;
-        margin: 4px;
+        font-size: 18px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+        margin: 8px;
     }
+    .primary-btn:hover { opacity: 0.8; transform: translateY(-2px); }
 
-    button:hover { opacity: 0.7; }
-    
+    /* 抽選ボタン（引く・削除） */
     .roll-btn {
         background: white;
         color: var(--text);
         border: 1px solid var(--border);
-        padding: 2px 8px;
-        font-size: 11px;
-        margin-left: 8px;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: auto;
     }
-    .roll-btn:hover { background: var(--secondary); }
+    .roll-btn:hover { background: var(--secondary); border-color: var(--muted); }
 
-    .secondary-btn { background: var(--muted); border-color: var(--muted); }
+    /* ＋質問・＋出来事ボタン */
+    .add-btn {
+        display: block;
+        width: 100%;
+        background: var(--secondary);
+        color: var(--text);
+        border: 2px dashed var(--border);
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: 0.2s;
+    }
+    .add-btn:hover { background: #e9ecef; border-color: var(--muted); }
 
     .row {
         display: flex;
-        gap: 24px;
-        margin-bottom: 24px;
+        gap: 30px;
+        margin-bottom: 30px;
         flex-wrap: wrap;
     }
 
     .card {
         flex: 1;
-        min-width: 300px;
+        min-width: 320px;
         background: var(--card-bg);
         border: 1px solid var(--border);
-        padding: 24px;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .card h2 {
+        font-size: 22px;
+        border-left: 5px solid var(--accent);
+        padding-left: 15px;
+        margin-bottom: 30px;
     }
 
     .result-box {
-        margin-bottom: 12px;
-        padding-bottom: 8px;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
         border-bottom: 1px solid var(--secondary);
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 15px;
     }
 
-    .result-label { font-size: 12px; color: var(--muted); min-width: 60px; }
-    .result-val { font-weight: bold; font-size: 16px; flex-grow: 1; margin-left: 10px;}
+    .result-label { 
+        font-size: 13px; 
+        color: var(--muted); 
+        width: 100px;
+        flex-shrink: 0;
+    }
 
-    select {
-        padding: 4px;
+    .result-val { 
+        font-weight: 700; 
+        font-size: 18px; 
+        flex-grow: 1;
+    }
+
+    select, textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
         border: 1px solid var(--border);
-        border-radius: 4px;
-        font-size: 14px;
+        border-radius: 6px;
+        font-size: 16px;
+        background: #fff;
+        transition: border-color 0.2s;
+        font-family: inherit;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: var(--focus);
         background: #fff;
     }
 
     textarea {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        border: 1px solid var(--border);
-        border-radius: 2px;
-        font-size: 14px;
-        background: #fff;
         overflow: hidden;
         resize: none;
-        min-height: 40px;
+        min-height: 48px;
         display: block;
     }
 
-    input[type="text"] {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 8px;
+    .section {
+        margin-top: 60px;
+        background: var(--card-bg);
         border: 1px solid var(--border);
-        font-size: 14px;
-        margin-bottom: 10px;
+        border-radius: 12px;
+        padding: 40px;
     }
 
-    .section {
-        margin-top: 40px;
-        border-top: 2px solid var(--accent);
-        padding-top: 24px;
-        margin-bottom: 20px;
-    }
+    .section h2 { font-size: 26px; margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block; }
 
     .item-box {
-        background: var(--secondary);
-        padding: 15px;
-        margin-bottom: 15px;
+        background: var(--bg);
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 20px;
         position: relative;
+        border: 1px solid var(--border);
     }
 
     .detail-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-    .detail-title {
-        font-weight: bold;
-        font-size: 14px;
-        margin-top: 15px;
-        margin-bottom: 5px;
-        display: block;
+        gap: 40px;
     }
 
-    /* 設定エリア専用スタイル */
+    .detail-title {
+        font-weight: 700;
+        font-size: 14px;
+        margin-top: 20px;
+        margin-bottom: 6px;
+        display: block;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+    }
+
+    /* 設定エリア */
     .master-data {
-        margin-top: 80px;
-        padding: 20px;
-        background: #f9f9f9;
-        font-size: 12px;
-        border: 1px dashed #ccc;
+        margin-top: 120px;
+        padding: 40px;
+        background: #eee;
+        font-size: 13px;
+        border-radius: 12px;
     }
     .master-data textarea {
-        resize: vertical; /* 手動リサイズを有効化 */
-        min-height: 120px;
-        overflow-y: auto; /* 長くなったらスクロール可能に */
+        font-size: 13px;
+        min-height: 100px;
+        resize: vertical;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+        .detail-grid { grid-template-columns: 1fr; }
+        .row { flex-direction: column; }
+        h1 { font-size: 32px; }
     }
 </style>
 </head>
 <body>
 
-<h1>🎲 ランダムカプメーカー</h1>
+<h1>🎲 ランダムカプゲーム</h1>
 
 <div class="btn-group">
-    <button onclick="rollAll()" style="font-size: 18px; padding: 15px 40px;">すべてランダムに決定</button>
+    <button class="primary-btn" onclick="rollAll()" style="font-size: 24px; padding: 20px 60px;">すべてランダムに決定</button>
 </div>
 
 <div class="row">
@@ -173,7 +227,7 @@
         <h2>CHARACTER 1</h2>
         <div class="result-box">
             <span class="result-label">性別</span>
-            <select id="gender1" style="flex-grow: 1; margin-left: 10px;">
+            <select id="gender1">
                 <option value="男性">男性</option>
                 <option value="女性">女性</option>
                 <option value="中性">中性</option>
@@ -190,18 +244,18 @@
             <button class="roll-btn" onclick="slot('title1', masterData.title)">引く</button>
         </div>
         <div class="result-box">
-            <span class="result-label">想い</span>
+            <span class="result-label">相手への想い</span>
             <div class="result-val" id="feel1">-</div>
             <button class="roll-btn" onclick="slot('feel1', masterData.feel)">引く</button>
         </div>
-        <textarea class="save-target auto-resize" data-label="C1メモ" placeholder="自由メモ"></textarea>
+        <textarea class="save-target auto-resize" data-label="C1メモ" placeholder="自由メモ" style="margin-top:20px;"></textarea>
     </div>
 
     <div class="card">
         <h2>CHARACTER 2</h2>
         <div class="result-box">
             <span class="result-label">性別</span>
-            <select id="gender2" style="flex-grow: 1; margin-left: 10px;">
+            <select id="gender2">
                 <option value="男性">男性</option>
                 <option value="女性">女性</option>
                 <option value="中性">中性</option>
@@ -218,29 +272,31 @@
             <button class="roll-btn" onclick="slot('title2', masterData.title)">引く</button>
         </div>
         <div class="result-box">
-            <span class="result-label">想い</span>
+            <span class="result-label">相手への想い</span>
             <div class="result-val" id="feel2">-</div>
             <button class="roll-btn" onclick="slot('feel2', masterData.feel)">引く</button>
         </div>
-        <textarea class="save-target auto-resize" data-label="C2メモ" placeholder="自由メモ"></textarea>
+        <textarea class="save-target auto-resize" data-label="C2メモ" placeholder="自由メモ" style="margin-top:20px;"></textarea>
     </div>
 </div>
 
 <div class="section">
     <h2>二人の関係性</h2>
-    <textarea class="save-target auto-resize" data-label="二人の関係性" placeholder="関係性の詳細を入力..."></textarea>
+    <div id="relation-container">
+        <textarea class="save-target auto-resize" data-label="二人の関係性" placeholder=""></textarea>
+    </div>
 </div>
 
 <div class="section">
     <h2>深掘り質問</h2>
-    <button class="secondary-btn" onclick="addExtra('deep')">＋ 質問を引く</button>
     <div id="deep-container"></div>
+    <button class="add-btn" onclick="addExtra('deep')">＋ 質問を引く</button>
 </div>
 
 <div class="section">
     <h2>出来事</h2>
-    <button class="secondary-btn" onclick="addExtra('event')">＋ 出来事を引く</button>
     <div id="event-container"></div>
+    <button class="add-btn" onclick="addExtra('event')">＋ 出来事を引く</button>
 </div>
 
 <div class="section">
@@ -248,7 +304,7 @@
     <div class="detail-grid">
         <div>
             <h3>CHARACTER 1</h3>
-            <span class="detail-title">名前</span><input type="text" class="save-target" data-label="C1名前">
+            <span class="detail-title">名前</span><textarea class="save-target auto-resize" data-label="C1名前"></textarea>
             <span class="detail-title">一人称</span><textarea class="save-target auto-resize" data-label="C1一人称"></textarea>
             <span class="detail-title">二人称</span><textarea class="save-target auto-resize" data-label="C1二人称"></textarea>
             <span class="detail-title">相手からの呼ばれ方</span><textarea class="save-target auto-resize" data-label="C1被呼称"></textarea>
@@ -257,7 +313,7 @@
         </div>
         <div>
             <h3>CHARACTER 2</h3>
-            <span class="detail-title">名前</span><input type="text" class="save-target" data-label="C2名前">
+            <span class="detail-title">名前</span><textarea class="save-target auto-resize" data-label="C2名前"></textarea>
             <span class="detail-title">一人称</span><textarea class="save-target auto-resize" data-label="C2一人称"></textarea>
             <span class="detail-title">二人称</span><textarea class="save-target auto-resize" data-label="C2二人称"></textarea>
             <span class="detail-title">相手からの呼ばれ方</span><textarea class="save-target auto-resize" data-label="C2被呼称"></textarea>
@@ -267,37 +323,135 @@
     </div>
 </div>
 
-<div class="btn-group" style="margin-top: 60px;">
-    <button onclick="saveText()" style="background: #000; padding: 20px 50px; font-weight: bold;">💾 ページを保存（.txt）</button>
-    <button class="secondary-btn" onclick="copyToClipboard()">📋 コピー</button>
+<div class="btn-group" style="margin-top: 100px;">
+    <button class="primary-btn" onclick="saveText()">💾 設定を.txtで保存</button>
+    <button class="primary-btn" onclick="copyToClipboard()">📋 クリップボードにコピー</button>
 </div>
 
 <div class="master-data">
     <h3>⚙️ 抽選項目の編集</h3>
-    <p>改行区切りで入力してください。右下をドラッグして広げることができます。</p>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-        <div>属性（男性）<textarea id="master-attr-male" oninput="updateMaster()">熱血&#13;紳士的&#13;俺様&#13;不器用</textarea></div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div>属性（男性）<textarea id="master-attr-male" oninput="updateMaster()">
+            クール
+ツンデレ
+ヤンデレ
+熱血
+元気
+カリスマ
+おバカ
+ドジ
+ダウナー系
+おっとり
+鈍感
+ヘタレ
+王子様
+ドS
+ドM
+健気
+ピュア
+天真爛漫
+お調子者
+冷徹
+真面目
+不真面目
+不器用
+陰キャ
+陽キャ
+天才
+凡人
+努力家
+ナルシスト
+献身的
+おかん気質
+犬っぽい
+猫っぽい
+爽やか
+癒し系
+ガサツ
+遊び人
+不幸体質
+ミステリアス
+孤高
+フレンドリー
+破天荒
+天然
+変人
+自由人
+毒舌
+素直
+正義感が強い
+自己犠牲的
+優しい
+強引
+意地悪
+儚げ
+メンヘラ
+情熱的
+穏やか
+完璧主義
+無気力
+腹黒い
+裕福
+ロマンチスト
+セクシー
+可愛い系
+あざとい
+利己的
+反抗的
+堅物
+お人好し
+ひねくれ
+毒舌
+無口
+無表情
+短気
+嘘つき
+バカ正直
+ネガティブ
+ポジティブ
+サイコパス
+人気者
+ぼっち
+変態
+いじられキャラ
+人嫌い
+人間不信
+シャイ
+臆病
+泣き虫
+空気が読めない
+不思議キャラ
+勝気
+生意気
+能天気
+高飛車
+オタク
+少女趣味
+オカルトマニア
+自己肯定感低い
+不憫
+俺様
+チャラ男
+オカマ
+オラオラ系
+ワイルド
+中性的
+        </textarea></div>
         <div>属性（女性）<textarea id="master-attr-female" oninput="updateMaster()">清楚&#13;ツンデレ&#13;お姉様&#13;勝気</textarea></div>
         <div>属性（中性）<textarea id="master-attr-neu" oninput="updateMaster()">ミステリアス&#13;中性的&#13;無垢&#13;達観</textarea></div>
-    </div>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
         <div>肩書き<textarea id="master-title" oninput="updateMaster()">学生&#13;探偵&#13;作家&#13;店員</textarea></div>
-        <div>想い<textarea id="master-feel" oninput="updateMaster()">片想い&#13;信頼&#13;執着</textarea></div>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+        <div>相手への想い<textarea id="master-feel" oninput="updateMaster()">片想い&#13;信頼&#13;執着&#13;憧れ</textarea></div>
         <div>深掘り質問<textarea id="master-deep" oninput="updateMaster()">弱点は？&#13;好きな部位は？</textarea></div>
         <div>出来事<textarea id="master-event" oninput="updateMaster()">偶然の再会&#13;雨の日の事件</textarea></div>
     </div>
 </div>
 
 <script>
-const storeKeyMaster = "cp_game_master_v4";
+const storeKeyMaster = "cp_game_master_v6";
 let masterData = {};
 
 function adjustHeight(el) {
-    // 編集エリア（master-data内）のtextareaは自動リサイズをスキップ（手動リサイズを優先）
     if (el.closest('.master-data')) return;
-
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
 }
@@ -341,7 +495,7 @@ function slot(id, list) {
     const interval = setInterval(() => {
         el.textContent = list[Math.floor(Math.random() * list.length)];
         count++;
-        if (count > 10) clearInterval(interval);
+        if (count > 12) clearInterval(interval);
     }, 40);
 }
 
@@ -362,15 +516,20 @@ function rollAll() {
 function addExtra(type) {
     const container = document.getElementById(`${type}-container`);
     const list = masterData[type];
+    if (!list.length) return;
     const text = list[Math.floor(Math.random() * list.length)];
     const div = document.createElement('div');
     div.className = 'item-box';
     div.innerHTML = `
-        <strong>${text}</strong>
-        <textarea class="save-target auto-resize" data-label="${type === 'deep' ? '質問' : '出来事'}: ${text}" style="margin-top:10px"></textarea>
-        <button class="roll-btn" style="position:absolute; top:10px; right:10px" onclick="this.parentElement.remove()">削除</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="font-size:18px;">${text}</strong>
+            <button class="roll-btn" style="color:var(--muted); border:none;" onclick="this.parentElement.parentElement.remove()">✕ 削除</button>
+        </div>
+        <textarea class="save-target auto-resize" data-label="${type === 'deep' ? '質問' : '出来事'}: ${text}"></textarea>
     `;
     container.appendChild(div);
+    const ta = div.querySelector('textarea');
+    adjustHeight(ta);
 }
 
 function buildExportText() {
@@ -380,7 +539,7 @@ function buildExportText() {
         const a = document.getElementById(`attr${i}`).textContent;
         const t = document.getElementById(`title${i}`).textContent;
         const f = document.getElementById(`feel${i}`).textContent;
-        if(a !== "-") txt += `CHARACTER ${i}: [${g}] ${a} / ${t} / 想い: ${f}\n`;
+        if(a !== "-") txt += `CHARACTER ${i}: [${g}] ${a} / ${t} / 相手への想い: ${f}\n`;
     }
     txt += "\n";
 
