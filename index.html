@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ランダムカプメーカー</title>
+<style>
+    :root {
+        --bg: #ffffff;
+        --card-bg: #fdfdfd;
+        --border: #e0e0e0;
+        --text: #1a1a1a;
+        --accent: #000000;
+        --secondary: #f4f4f4;
+        --muted: #757575;
+    }
+
+    body {
+        font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 40px 20px;
+        line-height: 1.6;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    h1, h2, h3 {
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        margin-bottom: 15px;
+    }
+
+    h1 { text-align: center; margin-bottom: 40px; }
+
+    .btn-group { text-align: center; margin-bottom: 30px; }
+
+    button {
+        background: var(--accent);
+        color: white;
+        border: 1px solid var(--accent);
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+        margin: 4px;
+    }
+
+    button:hover { opacity: 0.7; }
+    
+    .roll-btn {
+        background: white;
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 2px 8px;
+        font-size: 11px;
+        margin-left: 8px;
+    }
+    .roll-btn:hover { background: var(--secondary); }
+
+    .secondary-btn { background: var(--muted); border-color: var(--muted); }
+
+    .row {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .card {
+        flex: 1;
+        min-width: 300px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        padding: 24px;
+    }
+
+    .result-box {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--secondary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .result-label { font-size: 12px; color: var(--muted); min-width: 60px; }
+    .result-val { font-weight: bold; font-size: 16px; flex-grow: 1; margin-left: 10px;}
+
+    select {
+        padding: 4px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 14px;
+        background: #fff;
+    }
+
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        font-size: 14px;
+        background: #fff;
+        overflow: hidden;
+        resize: none;
+        min-height: 40px;
+        display: block;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .section {
+        margin-top: 40px;
+        border-top: 2px solid var(--accent);
+        padding-top: 24px;
+        margin-bottom: 20px;
+    }
+
+    .item-box {
+        background: var(--secondary);
+        padding: 15px;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .detail-title {
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .master-data {
+        margin-top: 80px;
+        padding: 20px;
+        background: #f9f9f9;
+        font-size: 12px;
+        border: 1px dashed #ccc;
+    }
+</style>
+</head>
+<body>
+
+<h1>🎲 ランダムカプメーカー</h1>
+
+<div class="btn-group">
+    <button onclick="rollAll()" style="font-size: 18px; padding: 15px 40px;">すべてランダムに決定</button>
+</div>
+
+<div class="row">
+    <div class="card">
+        <h2>CHARACTER 1</h2>
+        <div class="result-box">
+            <span class="result-label">性別</span>
+            <select id="gender1" style="flex-grow: 1; margin-left: 10px;">
+                <option value="男性">男性</option>
+                <option value="女性">女性</option>
+                <option value="中性">中性</option>
+            </select>
+        </div>
+        <div class="result-box">
+            <span class="result-label">属性</span>
+            <div class="result-val" id="attr1">-</div>
+            <button class="roll-btn" onclick="rollGenderAttr(1)">引く</button>
+        </div>
+        <div class="result-box">
+            <span class="result-label">肩書き</span>
+            <div class="result-val" id="title1">-</div>
+            <button class="roll-btn" onclick="slot('title1', masterData.title)">引く</button>
+        </div>
+        <div class="result-box">
+            <span class="result-label">想い</span>
+            <div class="result-val" id="feel1">-</div>
+            <button class="roll-btn" onclick="slot('feel1', masterData.feel)">引く</button>
+        </div>
+        <textarea class="save-target auto-resize" data-label="C1メモ" placeholder="自由メモ"></textarea>
+    </div>
+
+    <div class="card">
+        <h2>CHARACTER 2</h2>
+        <div class="result-box">
+            <span class="result-label">性別</span>
+            <select id="gender2" style="flex-grow: 1; margin-left: 10px;">
+                <option value="男性">男性</option>
+                <option value="女性">女性</option>
+                <option value="中性">中性</option>
+            </select>
+        </div>
+        <div class="result-box">
+            <span class="result-label">属性</span>
+            <div class="result-val" id="attr2">-</div>
+            <button class="roll-btn" onclick="rollGenderAttr(2)">引く</button>
+        </div>
+        <div class="result-box">
+            <span class="result-label">肩書き</span>
+            <div class="result-val" id="title2">-</div>
+            <button class="roll-btn" onclick="slot('title2', masterData.title)">引く</button>
+        </div>
+        <div class="result-box">
+            <span class="result-label">想い</span>
+            <div class="result-val" id="feel2">-</div>
+            <button class="roll-btn" onclick="slot('feel2', masterData.feel)">引く</button>
+        </div>
+        <textarea class="save-target auto-resize" data-label="C2メモ" placeholder="自由メモ"></textarea>
+    </div>
+</div>
+
+<div class="section">
+    <h2>二人の関係性</h2>
+    <textarea class="save-target auto-resize" data-label="二人の関係性" placeholder="関係性の詳細を入力..."></textarea>
+</div>
+
+<div class="section">
+    <h2>深掘り質問</h2>
+    <button class="secondary-btn" onclick="addExtra('deep')">＋ 質問を引く</button>
+    <div id="deep-container"></div>
+</div>
+
+<div class="section">
+    <h2>出来事</h2>
+    <button class="secondary-btn" onclick="addExtra('event')">＋ 出来事を引く</button>
+    <div id="event-container"></div>
+</div>
+
+<div class="section">
+    <h2>細かい設定</h2>
+    <div class="detail-grid">
+        <div>
+            <h3>CHARACTER 1</h3>
+            <span class="detail-title">名前</span><input type="text" class="save-target" data-label="C1名前">
+            <span class="detail-title">一人称</span><textarea class="save-target auto-resize" data-label="C1一人称"></textarea>
+            <span class="detail-title">二人称</span><textarea class="save-target auto-resize" data-label="C1二人称"></textarea>
+            <span class="detail-title">相手からの呼ばれ方</span><textarea class="save-target auto-resize" data-label="C1被呼称"></textarea>
+            <span class="detail-title">見た目</span><textarea class="save-target auto-resize" data-label="C1外見"></textarea>
+            <span class="detail-title">口調</span><textarea class="save-target auto-resize" data-label="C1口調"></textarea>
+        </div>
+        <div>
+            <h3>CHARACTER 2</h3>
+            <span class="detail-title">名前</span><input type="text" class="save-target" data-label="C2名前">
+            <span class="detail-title">一人称</span><textarea class="save-target auto-resize" data-label="C2一人称"></textarea>
+            <span class="detail-title">二人称</span><textarea class="save-target auto-resize" data-label="C2二人称"></textarea>
+            <span class="detail-title">相手からの呼ばれ方</span><textarea class="save-target auto-resize" data-label="C1被呼称"></textarea>
+            <span class="detail-title">見た目</span><textarea class="save-target auto-resize" data-label="C2外見"></textarea>
+            <span class="detail-title">口調</span><textarea class="save-target auto-resize" data-label="C2口調"></textarea>
+        </div>
+    </div>
+</div>
+
+<div class="btn-group" style="margin-top: 60px;">
+    <button onclick="saveText()" style="background: #000; padding: 20px 50px; font-weight: bold;">💾 ページを保存（.txt）</button>
+    <button class="secondary-btn" onclick="copyToClipboard()">📋 コピー</button>
+</div>
+
+<div class="master-data">
+    <h3>⚙️ 抽選項目の編集</h3>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div>属性（男性）<textarea id="master-attr-male" oninput="updateMaster()">熱血&#13;紳士的&#13;俺様&#13;不器用</textarea></div>
+        <div>属性（女性）<textarea id="master-attr-female" oninput="updateMaster()">清楚&#13;ツンデレ&#13;お姉様&#13;勝気</textarea></div>
+        <div>属性（中性）<textarea id="master-attr-neu" oninput="updateMaster()">ミステリアス&#13;中性的&#13;無垢&#13;達観</textarea></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+        <div>肩書き<textarea id="master-title" oninput="updateMaster()">学生&#13;探偵&#13;作家&#13;店員</textarea></div>
+        <div>想い<textarea id="master-feel" oninput="updateMaster()">片想い&#13;信頼&#13;執着</textarea></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+        <div>深掘り質問<textarea id="master-deep" oninput="updateMaster()">弱点は？&#13;好きな部位は？</textarea></div>
+        <div>出来事<textarea id="master-event" oninput="updateMaster()">偶然の再会&#13;雨の日の事件</textarea></div>
+    </div>
+</div>
+
+<script>
+const storeKeyMaster = "cp_game_master_v4";
+let masterData = {};
+
+function adjustHeight(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+}
+
+document.addEventListener('input', e => {
+    if (e.target.tagName.toLowerCase() === 'textarea') adjustHeight(e.target);
+});
+
+window.onload = () => {
+    const savedMaster = localStorage.getItem(storeKeyMaster);
+    if (savedMaster) {
+        masterData = JSON.parse(savedMaster);
+        document.getElementById('master-attr-male').value = masterData.attrMale.join('\n');
+        document.getElementById('master-attr-female').value = masterData.attrFemale.join('\n');
+        document.getElementById('master-attr-neu').value = masterData.attrNeu.join('\n');
+        document.getElementById('master-title').value = masterData.title.join('\n');
+        document.getElementById('master-feel').value = masterData.feel.join('\n');
+        document.getElementById('master-deep').value = masterData.deep.join('\n');
+        document.getElementById('master-event').value = masterData.event.join('\n');
+    } else {
+        updateMaster();
+    }
+};
+
+function updateMaster() {
+    masterData = {
+        attrMale: document.getElementById('master-attr-male').value.split('\n').filter(v => v),
+        attrFemale: document.getElementById('master-attr-female').value.split('\n').filter(v => v),
+        attrNeu: document.getElementById('master-attr-neu').value.split('\n').filter(v => v),
+        title: document.getElementById('master-title').value.split('\n').filter(v => v),
+        feel: document.getElementById('master-feel').value.split('\n').filter(v => v),
+        deep: document.getElementById('master-deep').value.split('\n').filter(v => v),
+        event: document.getElementById('master-event').value.split('\n').filter(v => v)
+    };
+    localStorage.setItem(storeKeyMaster, JSON.stringify(masterData));
+}
+
+function slot(id, list) {
+    const el = document.getElementById(id);
+    let count = 0;
+    const interval = setInterval(() => {
+        el.textContent = list[Math.floor(Math.random() * list.length)];
+        count++;
+        if (count > 10) clearInterval(interval);
+    }, 40);
+}
+
+function rollGenderAttr(num) {
+    const gender = document.getElementById(`gender${num}`).value;
+    let list;
+    if (gender === '男性') list = masterData.attrMale;
+    else if (gender === '女性') list = masterData.attrFemale;
+    else list = masterData.attrNeu;
+    slot(`attr${num}`, list);
+}
+
+function rollAll() {
+    rollGenderAttr(1); slot('title1', masterData.title); slot('feel1', masterData.feel);
+    rollGenderAttr(2); slot('title2', masterData.title); slot('feel2', masterData.feel);
+}
+
+function addExtra(type) {
+    const container = document.getElementById(`${type}-container`);
+    const list = masterData[type];
+    const text = list[Math.floor(Math.random() * list.length)];
+    const div = document.createElement('div');
+    div.className = 'item-box';
+    div.innerHTML = `
+        <strong>${text}</strong>
+        <textarea class="save-target auto-resize" data-label="${type === 'deep' ? '質問' : '出来事'}: ${text}" style="margin-top:10px"></textarea>
+        <button class="roll-btn" style="position:absolute; top:10px; right:10px" onclick="this.parentElement.remove()">削除</button>
+    `;
+    container.appendChild(div);
+}
+
+function buildExportText() {
+    let txt = "【ランダムカプ設定】\n\n";
+    for(let i=1; i<=2; i++){
+        const g = document.getElementById(`gender${i}`).value;
+        const a = document.getElementById(`attr${i}`).textContent;
+        const t = document.getElementById(`title${i}`).textContent;
+        const f = document.getElementById(`feel${i}`).textContent;
+        if(a !== "-") txt += `CHARACTER ${i}: [${g}] ${a} / ${t} / 想い: ${f}\n`;
+    }
+    txt += "\n";
+
+    document.querySelectorAll('.save-target').forEach(el => {
+        const label = el.getAttribute('data-label');
+        const val = el.value.trim();
+        if (val) txt += `■ ${label}\n${val}\n\n`;
+    });
+    return txt.trim();
+}
+
+function saveText() {
+    const txt = buildExportText();
+    const blob = new Blob([txt], {type: "text/plain"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cp_setting.txt`;
+    a.click();
+}
+
+function copyToClipboard() {
+    const txt = buildExportText();
+    navigator.clipboard.writeText(txt).then(() => alert("コピーしました"));
+}
+</script>
+
+</body>
+</html>
